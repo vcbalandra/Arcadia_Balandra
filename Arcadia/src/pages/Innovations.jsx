@@ -30,7 +30,7 @@ const Innovations = () => {
        circular solutions.
     </p>
     <a href="#growing">
-    <button className="hero-button">Explore Projects</button>
+    <button className="hero-button">Explore Events</button>
     </a>
     </div>
     </section>
@@ -39,7 +39,7 @@ const Innovations = () => {
     <div className="growing-container">
     <div className="row">
     <h2 className='growing-header'>A Growing Network for Impact</h2>
-    <p className='growing-message'>Arcadia brings together a diverse ecosystem of changemakers including the academe, 
+    <p className='growing-message'><span className='arcadia-word'>Arcadia</span> brings together a diverse ecosystem of changemakers including the academe, 
     local including the academe, local and national government agencies, NGOs, industry associations and chambers of commerce
     By fostering cross-sector collaboration, we ensure that circular economy strategies are informed, inclusives and built for long-term
     sustainability.
@@ -54,7 +54,7 @@ const Innovations = () => {
     <section id='keys' className='keys'>
     <div className="keys-container">
     <h3 className='keys-header'>Three Key Components</h3>
-    <p className='keys-message'>Arcadia's methodology revolves around fostering a continous cycle of dialogue, knowledge sharing, and innovation,
+    <p className='keys-message'><span className='arcadia-word'>Arcadia's</span> methodology revolves around fostering a continous cycle of dialogue, knowledge sharing, and innovation,
       to empower shareholders and drives meaningful sustainability outcomes. Our key pillars includes: 
     </p>
     <div className="card-grid">
@@ -62,16 +62,19 @@ const Innovations = () => {
       <img src={heroImage} alt="Events" className="card-image" />
         <h2>Events</h2>
         <p>This is the first card.</p>
+        <button>Learn more</button>
       </div>
       <div className="card">
       <img src={heroImage} alt="Events" className="card-image" />
         <h2>Knowledge Portal</h2>
         <p>This is the second card.</p>
+        <button>Learn more</button>
       </div>
       <div className="card">
       <img src={heroImage} alt="Events" className="card-image" />
         <h2>Innovation & Solutions Exchange</h2>
         <p>This is the third card.</p>
+        <button>Learn more</button>
       </div>
       </div>
     </div>
@@ -90,7 +93,7 @@ const Innovations = () => {
     <section id='about' className='about'>
     <div className="about-container">
     <h5 className='about-header'>About Arcadia</h5>
-    <p className='about-message'>Arcadia is a sustainability hub for companies commited to advancing sustainability practices and accelerating
+    <p className='about-message'><span className='arcadia-word'>Arcadia</span> is a sustainability hub for companies commited to advancing sustainability practices and accelerating
       the transition to a circular economy.
     </p>
     <p className='about-hub'>As a hub, it facilitates the exchange of loading sustainability practices and resources, fostering the development

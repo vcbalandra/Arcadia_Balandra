@@ -8,6 +8,9 @@ export const createJWT = (payload) => {
 };
 
 export const verifyJWT = (token) => {
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  return decoded;
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET);  // Secret key from .env
+  } catch (error) {
+    throw new Error('Invalid token');
+  }
 };

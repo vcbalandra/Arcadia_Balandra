@@ -83,7 +83,6 @@ const Wrapper = styled.section`
 }
 
 .campaigns-message {
-    display: flex;
     font-size: 20px;
     max-width: 900px;
     word-wrap: break-word;
@@ -181,6 +180,12 @@ const Wrapper = styled.section`
   .previous {
     background-color: #e6fcf5;
   }
+
+  .arcadia-word {
+  color: #008080;
+  font-size: 30px;
+  font-weight: bold;
+}
 
 
   @media (max-width: 768px) {
@@ -281,6 +286,10 @@ const Wrapper = styled.section`
   .embla__slide {
     flex: 0 0 100%; 
   }
+  
+  .arcadia-word {
+      font-size: 16px;
+    }
   }
 
 `;

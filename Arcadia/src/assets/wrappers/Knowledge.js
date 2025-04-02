@@ -115,9 +115,8 @@ const Wrapper = styled.section`
   }
 
   .papers-message {
-    display: flex;
     font-size: 20px;
-    max-width: 900px;
+    max-width: 600px;
     word-wrap: break-word;
     margin-bottom: 20px;
     color: #000000;
@@ -244,6 +243,13 @@ const Wrapper = styled.section`
   flex-direction: column;
   color: #000000;
 }
+
+.arcadia-word {
+  color: #008080;
+  font-size: 30px;
+  font-weight: bold;
+}
+
 
 @media (max-width: 1200px) {
   .section-hero, .market-analysis, .position-papers, .reports-manifestos, .editorials, .waste-reports {
@@ -432,6 +438,10 @@ const Wrapper = styled.section`
   .container {
     padding: 0 1rem; 
   }
+
+  .arcadia-word {
+      font-size: 16px;
+    }
 }
   `;
 

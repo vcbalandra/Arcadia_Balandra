@@ -12,7 +12,7 @@ const Navbar = () => {
   return (
     <Wrapper>
       <nav className="navbar">
-        <a href="#section-hero" className="logoLink">
+        <a href="/" className="logoLink">
           <div className="logo">
             <Logo />
           </div>
@@ -41,8 +41,10 @@ const Navbar = () => {
             </a>
           </li>
           <li>
-            <a href="#" className="nav-item">
-              Contact
+            <a href="/login" className="nav-item">
+            <button className='login-btn'>
+              Login
+            </button>
             </a>
           </li>
         </ul>

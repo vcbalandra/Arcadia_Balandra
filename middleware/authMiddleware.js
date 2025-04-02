@@ -5,17 +5,16 @@ import {
 import { verifyJWT } from '../utils/tokenUtils.js';
 
 export const authenticateUser = (req, res, next) => {
-  const { token } = req.cookies;
+  const token = req.cookies.token; 
+  
   if (!token) {
     throw new UnauthenticatedError('Authentication invalid: No token provided');
   }
 
   try {
-    const { userId, role } = verifyJWT(token);
-
-    req.user = { userId, role };
-    
-    next(); 
+    const { userId, role } = verifyJWT(token);  
+    req.user = { userId, role }; 
+    next();
   } catch (error) {
     throw new UnauthenticatedError('Authentication invalid: Invalid token');
   }

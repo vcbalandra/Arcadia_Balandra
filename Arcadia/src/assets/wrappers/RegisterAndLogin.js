@@ -92,6 +92,7 @@ const Wrapper = styled.section`
     color: #333;
     margin-bottom: 0.5rem;
   }
+  
 `;
 
 export default Wrapper;

@@ -25,10 +25,23 @@ const Wrapper = styled.div`
 
   .nav-links {
     display: flex;
-    gap: 20px;
+    gap: 40px;
     list-style-type: none;
     margin-right: 6rem;
     margin-top: 1rem;
+  }
+
+  .login-btn {
+    align-self: center;
+    color: #fff;
+    background-color: #008080;
+    border-radius: 3rem;
+    width: 7rem;
+  }
+
+  .login-btn:hover {
+    background-color: rgb(9, 161, 161);
+    cursor: pointer;
   }
 
   li {

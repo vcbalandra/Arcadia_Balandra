@@ -4,6 +4,7 @@ import {
  
 } from '../errors/customErrors.js';
 import User from '../models/User.js';
+import Event from '../models/Event.js';
 
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
@@ -63,4 +64,24 @@ export const validateUpdateUserInput = [
   body('location').notEmpty().withMessage('location is required'),
   body('lastName').notEmpty().withMessage('last name is required'),
   handleValidationErrors, 
+];
+
+
+export const validateEventInput = [
+  body('title')
+    .notEmpty()
+    .withMessage('Event title is required')
+    .isLength({ min: 5 })
+    .withMessage('Event title must be at least 5 characters long'),
+
+  body('description')
+    .notEmpty()
+    .withMessage('Event description is required')
+    .isLength({ min: 10 })
+    .withMessage('Event description must be at least 10 characters long'),
+
+  body('eventImage') 
+    .optional()
+    .isURL()
+    .withMessage('Event image must be a valid URL if provided'),
 ];

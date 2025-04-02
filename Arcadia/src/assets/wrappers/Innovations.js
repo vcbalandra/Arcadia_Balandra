@@ -177,6 +177,12 @@ const Section = styled.section`
   color: #555;
 }
 
+.arcadia-word {
+  color: #008080;
+  font-size: 30px;
+  font-weight: bold;
+}
+
 
   @media (max-width: 1024px) {
     .heroImg {
@@ -406,6 +412,10 @@ const Section = styled.section`
     
     .card {
      
+    }
+
+    .arcadia-word {
+      font-size: 16px;
     }
   }
 `;

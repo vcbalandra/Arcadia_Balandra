@@ -73,7 +73,7 @@ const Events = () => {
             </div>
             <div className="row">
           <h3 className='campaigns-title'>HACKATHONS AND CAMPAIGNS</h3>
-          <p className='campaigns-message'>Arcadia organizes hackathons and campaign-driven events designed to bring together innovative
+          <p className='campaigns-message'><span className='arcadia-word'>Arcadia</span> organizes hackathons and campaign-driven events designed to bring together innovative
             minds and passionate advocates to solve real-world sustainability challenges. These immversive, hands-on sessions invite companies,
             young leaders, and experts to collaborate in developing creative solutions, while aligning with corporate sustainability goals and advocacy
             efforts. Through these events, we foster the rapid prototyping of ideas, accelerate problem-solving, and drive the development 

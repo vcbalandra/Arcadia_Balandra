@@ -12,7 +12,7 @@ const Navbar = () => {
         </button>
         <div>
           <Logo />
-          <h4 className='logo-text'>dashboard</h4>
+          <h4 className='logo-text'>Admin Dashboard</h4>
         </div>
         <div className='btn-container'>
           <LogoutContainer />

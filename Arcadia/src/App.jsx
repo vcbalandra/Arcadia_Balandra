@@ -1,8 +1,11 @@
+import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import PrivateRoute from './components/PrivateRoute';
+import { AuthProvider } from './context/AuthContext';
 
 import {
   HomeLayout,
@@ -17,9 +20,11 @@ import {
   Register,
   Login,
   AddEvent,
+  AllEvents,
 } from './pages';
 
 import { action as addEventAction } from './pages/AddEvent';
+import { action as allEventsLoader } from './pages/AllEvents';
 import { loader as eventsLoader } from './pages/Events';
 import { loader as knowledgeLoader } from './pages/Knowledge';
 import { loader as innovationsLoader } from './pages/Innovations';
@@ -37,75 +42,86 @@ const queryClient = new QueryClient({
   },
 });
 
-
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <HomeLayout />,
-    errorElement: <Error />,
-    children: [
-      {
-        index: true,
-        element: <Landing />,  
-      },
-      {
-        path: 'register',
-        element: <Register />,
-        action: registerAction,
-      },
-      {
-        path: 'login',
-        element: <Login />,
-        action: loginAction(queryClient),
-      },
-      {
-        path: 'dashboard',
-        element: <DashboardLayout  />,
-        loader: dashboardLoader,
-        children: [
-          {
-            index: true,
-            element: <AddEvent />,  
-            action: addEventAction(queryClient), 
-          },
-          {
-            path: 'profile',
-            element: <Profile />,
-            action: profileAction(queryClient),
-          },
-          {
-            path: 'admin',
-            element: <Admin />,
-            loader: adminLoader,
-          },
-        ],
-      },
-      {
-        path: '/events-collaboration',
-        element: <Events />,
-        loader: eventsLoader,
-      },
-      {
-        path: '/knowledge-hub',
-        element: <Knowledge />,
-        loader: knowledgeLoader,
-      },
-      {
-        path: '/innovation-solutions-exchange',
-        element: <Innovations />,
-        loader: innovationsLoader,
-      },
-    ],
-  },
-]);
-
 const App = () => {
+  const router = createBrowserRouter([
+    {
+      path: '/',
+      element: <HomeLayout />,
+      errorElement: <Error />,
+      children: [
+        {
+          index: true,
+          element: <Landing />,  
+        },
+        {
+          path: 'register',
+          element: <Register />,
+          action: registerAction,
+        },
+        {
+          path: 'login',
+          element: <Login />,
+          action: loginAction(queryClient),
+        },
+        {
+          path: 'dashboard',
+          element: <PrivateRoute element={DashboardLayout}  requiredRole="user" />, 
+          loader: dashboardLoader,
+          children: [
+            {
+              index: true,
+              element: <AddEvent />,  
+              action: addEventAction(queryClient), 
+            },
+            {
+              path: 'add-event',
+              element: <AddEvent />,
+              action: addEventAction(queryClient),
+            },
+            {
+              path: 'all-events',
+              element: <AllEvents />,  
+              action: allEventsLoader(queryClient), 
+              errorElement: <Error />,
+            },
+            {
+              path: 'profile',
+              element: <Profile />,
+              action: profileAction(queryClient),
+            },
+            {
+              path: 'admin',
+              element: <PrivateRoute element={Admin} requiredRole="user" />,  
+              loader: adminLoader,
+            },
+          ],
+        },
+        {
+          path: '/events-collaboration',
+          element: <Events />,
+          loader: eventsLoader,
+        },
+        {
+          path: '/knowledge-hub',
+          element: <Knowledge />,
+          loader: knowledgeLoader,
+        },
+        {
+          path: '/innovation-solutions-exchange',
+          element: <Innovations />,
+          loader: innovationsLoader,
+        },
+      ],
+    },
+  ]);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    <AuthProvider>  
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </AuthProvider>
   );
 };
 

@@ -52,7 +52,7 @@ const Knowledge = () => {
       <div className="market-container">
             <div className="row">
           <h2 className='market-title'>MARKET ANALYSIS</h2>
-          <p className='market-message'>Arcadia conducts in-depth market analysis to provide businesses with a comprehensive understanding
+          <p className='market-message'><span className='arcadia-word'>Arcadia</span> conducts in-depth market analysis to provide businesses with a comprehensive understanding
             of the sustainability landscape. These analysis explore trends opportunities, challenges and key drivers in the transition
             to a circular economy. By delivering actionable insights, we enable companies to identify growth areas, anticipate market shifts,
             and shifts, and align their strategies with the evolving demands of sustainable practices and consumer preferences.
@@ -71,7 +71,7 @@ const Knowledge = () => {
             </div>
           <div className="row">
           <h3 className='papers-title'>POSITION PAPERS</h3>
-          <p className='papers-message'>Arcadia develops position papers that outline informed perspectives on critical sustainability issues.
+          <p className='papers-message'><span className='arcadia-word'>Arcadia</span> develops position papers that outline informed perspectives on critical sustainability issues.
             These papers offer a deep dive into industry challenges, policy recommendations, and strategic actions that stakeholders should
             adopt to dive systematic change. Backed by data, case studies, and expert insights, our position papers serve as authoratative
             resources for guiding decision-makers in business, government, and civil society toward impactful, sustainability-focused

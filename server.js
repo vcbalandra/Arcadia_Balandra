@@ -13,6 +13,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 // routers
 import authRouter from './routes/auth.js';
 import adminRouter from './routes/adminRouter.js';
+import eventRouter from './routes/eventRouter.js';
 
 // middleware
 import { authenticateUser } from './middleware/authMiddleware.js';
@@ -28,9 +29,10 @@ const corsOptions = {
   origin: 'http://localhost:5173', 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,  
 };
 
-// Use CORS middleware
+
 app.use(cors(corsOptions));
 
 cloudinary.config({
@@ -56,6 +58,7 @@ app.get('/', (req, res) => {
 // Define routes
 app.use('/admin', authenticateUser, adminRouter);
 app.use('/auth', authRouter);
+app.use('/add-event', authenticateUser, eventRouter);
 
 // Handle 404
 app.use('*', (req, res) => {
