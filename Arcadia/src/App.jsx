@@ -22,7 +22,6 @@ import {
   AllEvents,
 } from './pages';
 
-import { action as addEventAction } from './pages/AddEvent';
 import { loader as allEventsLoader } from './pages/AllEvents';
 import { loader as eventsLoader } from './pages/Events';
 import { loader as knowledgeLoader } from './pages/Knowledge';
@@ -71,12 +70,10 @@ const App = () => {
             {
               index: true,
               element: <AddEvent />,
-              action: addEventAction,
             },
             {
               path: 'add-event',
               element: <AddEvent />,
-              action: addEventAction,
             },
             {
               path: 'all-events',
