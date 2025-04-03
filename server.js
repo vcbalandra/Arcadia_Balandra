@@ -57,7 +57,7 @@ app.get('/', (req, res) => {
 // Define routes
 app.use('/admin', authenticateUser, adminRouter);
 app.use('/auth', authRouter);
-app.use('/add-event', authenticateUser, eventRouter);
+app.use('/event', authenticateUser, eventRouter);
 
 // Handle 404
 app.use('*', (req, res) => {

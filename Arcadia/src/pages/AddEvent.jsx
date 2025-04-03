@@ -34,10 +34,10 @@ const CreateEventForm = () => {
         }
     
         try {
-            const response = await customFetch.post("/add-event", formData, {
+            const response = await customFetch.post("/event/add-event", formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                    'Content-Type': 'multipart/form-data',
+                },
             });
     
             const data = await response.json();
@@ -114,7 +114,7 @@ const CreateEventForm = () => {
                             accept="image/*"
                         />
                     </div>
-                    <button type="submit" className="btn btn-primary">
+                    <button type="submit" className="btn btn-success">
                         Create Event
                     </button>
                 </form>

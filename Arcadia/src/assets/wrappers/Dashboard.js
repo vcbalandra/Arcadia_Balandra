@@ -16,7 +16,7 @@ const Wrapper = styled.div`
   
   .sidebar {
     width: 250px;
-    background-color: #2c3e50;
+    background-color: #008080;
     padding-top: 20px;
     color: white;
   }

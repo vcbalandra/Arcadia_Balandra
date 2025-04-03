@@ -1,5 +1,7 @@
 import cloudinary from 'cloudinary';
 import Event from '../models/Event.js'; // Event model
+import multer from 'multer'; // Make sure multer is installed for file handling
+
 // Set up Cloudinary configuration
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -7,82 +9,99 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadEventImage = async (req, res) => {
+// Multer memory storage for handling image upload in memory (no need to save it to disk)
+const storage = multer.memoryStorage();
+const upload = multer({ dest: 'uploads/' }).single('eventImage'); // Assuming you're uploading 'eventImage' field
+
+// Cloudinary image upload helper function (simplified)
+const uploadEventImage = async (file) => {
   try {
-      if (!req.file) {
-          return { error: "No image file uploaded" };
+    if (!file) {
+      throw new Error('No image file uploaded');
+    }
+
+    // Cloudinary upload directly from buffer
+    const cloudinaryResponse = await cloudinary.uploader.upload_stream(
+      { resource_type: 'auto' },
+      (error, result) => {
+        if (error) {
+          throw new Error('Cloudinary upload failed: ' + error.message);
+        }
+        return result;
       }
+    );
 
-      const formData = new FormData();
-      formData.append("file", fs.createReadStream(req.file.path));
-      formData.append("upload_preset", "event_images");
-      formData.append("api_key", process.env.CLOUD_API_KEY);
+    // Pipe the file buffer to Cloudinary
+    cloudinaryResponse.end(file.buffer); // 'file.buffer' holds the image data
 
-      const cloudinaryResponse = await axios.post(
-          `https://api.cloudinary.com/v1_1/${process.env.CLOUD_NAME}/image/upload`,
-          formData,
-          {
-              headers: {
-                  ...formData.getHeaders(),
-              },
-          }
-      );
-
-      fs.unlinkSync(req.file.path);
-
-      return { imageUrl: cloudinaryResponse.data.secure_url };
+    return { imageUrl: cloudinaryResponse.secure_url };
 
   } catch (error) {
-      console.error("Cloudinary Upload Error:", error.response?.data || error);
-      return { error: "Image upload failed" };
+    console.error('Cloudinary Upload Error:', error);
+    return { error: 'Image upload failed' };
   }
 };
 
+// Event creation handler
 export const createEvent = async (req, res) => {
   try {
-      const { eventTitle, eventDescription, eventDate, registrationLink } = req.body;
-      const createdBy = req.user.id; 
-      if (!eventTitle || !eventDescription || !eventDate || !registrationLink) {
-          return res.status(400).json({ message: "All fields are required" });
+    console.log(req.body);
+    
+    const { eventTitle, eventDescription, eventDate, registrationLink } = req.body;
+    const createdBy = req.user.id;
+
+    // Validate input fields
+    if (!eventTitle || !eventDescription || !eventDate || !registrationLink) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Handle image upload (using multer middleware for handling file upload)
+    upload(req, res, async (err) => {
+      if (err) {
+        return res.status(400).json({ message: "Error uploading image" });
       }
 
       if (!req.file) {
-          return res.status(400).json({ message: "Image is required" });
+        return res.status(400).json({ message: "Image is required" });
       }
-      const cloudinaryResponse = await uploadEventImage(req, res);
 
+      // Upload the image to Cloudinary
+      const cloudinaryResponse = await uploadEventImage(req.file);
 
       if (cloudinaryResponse.error) {
-          return res.status(500).json({ error: cloudinaryResponse.error });
+        return res.status(500).json({ error: cloudinaryResponse.error });
       }
 
       const imageUrl = cloudinaryResponse.imageUrl;
 
+      // Create new event
       const event = new Event({
-          eventTitle,
-          eventDescription,
-          eventDate,
-          eventImage: imageUrl,
-          registrationLink,
-          createdBy,
+        eventTitle,
+        eventDescription,
+        eventDate,
+        eventImage: imageUrl, // Store Cloudinary URL
+        registrationLink,
+        createdBy,
       });
 
       await event.save();
 
-    
       res.status(201).json(event);
+
+    });
+
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server error" });
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
+// Fetch events handler
 export const getEvents = async (req, res) => {
   try {
-    
     const events = await Event.find()
-      .sort({ createdAt: -1 }) 
-      .populate('createdBy', 'name email') 
+      .sort({ createdAt: -1 }) // Sort by creation date in descending order
+      .populate('createdBy', 'name email'); // Assuming createdBy references a User model
 
     return res.status(200).json({
       msg: 'Events fetched successfully',
