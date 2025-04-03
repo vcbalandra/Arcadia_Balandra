@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import Wrapper from "../assets/wrappers/Dashboard";
 import { useNavigate } from "react-router-dom";
+import customFetch from '../utils/customFetch';
  
 const CreateEventForm = () => {
     const [eventTitle, setTitle] = useState("");
+    const [registrationLink, setRegistration] = useState("");
     const [eventDescription, setDescription] = useState("");
     const [eventDate, setDate] = useState("");
     const [eventImage, setImage] = useState(null);
@@ -16,29 +18,36 @@ const CreateEventForm = () => {
  
     const handleCreateEvent = async (event) => {
         event.preventDefault();
- 
+    
         const formData = new FormData();
         formData.append("eventTitle", eventTitle);
+        formData.append("registrationLink", registrationLink);
         formData.append("eventDescription", eventDescription);
         formData.append("eventDate", eventDate);
         if (eventImage) {
             formData.append("eventImage", eventImage);
         }
- 
+    
+        // Log FormData to inspect the contents
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ": " + pair[1]);
+        }
+    
         try {
-            const response = await fetch("http://localhost:5200/add-event", {
-                method: "POST",
-                body: formData,
-                credentials: "include",
+            const response = await customFetch.post("/add-event", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             });
- 
+    
             const data = await response.json();
- 
+    
             if (response.ok) {
                 toast.success("Event created successfully!");
                 navigate('/admin/events');
-                //reset form fields
+                // Reset form fields
                 setTitle("");
+                setRegistration("");
                 setDescription("");
                 setDate("");
                 setImage(null);
@@ -53,10 +62,9 @@ const CreateEventForm = () => {
  
     return (
         <Wrapper>
-            <Navbar />
             <div className="container">
                 <h2>Create New Event</h2>
-                <form onSubmit={handleCreateEvent}>
+                <form onSubmit={handleCreateEvent} className="form" encType="multipart/form-data">
                     <div className="mb-3">
                         <label className="form-label">Title</label>
                         <input
@@ -64,6 +72,16 @@ const CreateEventForm = () => {
                             className="form-control"
                             value={eventTitle}
                             onChange={(e) => setTitle(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="form-label">Registration Link</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            value={registrationLink}
+                            onChange={(e) => setRegistration(e.target.value)}
                             required
                         />
                     </div>

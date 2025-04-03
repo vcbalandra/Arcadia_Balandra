@@ -2,7 +2,7 @@ import React from 'react'
 import { redirect } from 'react-router-dom';
 import customFetch from '../utils/customFetch';
 
-export const action = async () => {
+export const loader = async () => {
     try {
       const response = await  customFetch.get('/all-events');
       return response.data;

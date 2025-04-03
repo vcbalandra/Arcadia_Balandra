@@ -1,6 +1,5 @@
 import cloudinary from 'cloudinary';
 import Event from '../models/Event.js'; // Event model
-
 // Set up Cloudinary configuration
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -41,9 +40,9 @@ const uploadEventImage = async (req, res) => {
 
 export const createEvent = async (req, res) => {
   try {
-      const { eventTitle, eventDescription, eventDate } = req.body;
+      const { eventTitle, eventDescription, eventDate, registrationLink } = req.body;
       const createdBy = req.user.id; 
-      if (!eventTitle || !eventDescription || !eventDate) {
+      if (!eventTitle || !eventDescription || !eventDate || !registrationLink) {
           return res.status(400).json({ message: "All fields are required" });
       }
 
@@ -64,6 +63,7 @@ export const createEvent = async (req, res) => {
           eventDescription,
           eventDate,
           eventImage: imageUrl,
+          registrationLink,
           createdBy,
       });
 

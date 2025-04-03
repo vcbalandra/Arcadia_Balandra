@@ -1,15 +1,14 @@
 import express from 'express';
 import multer from 'multer';
-import { createEvent, getEvents } from '../controllers/eventController.js'; 
-import { validateEventInput } from '../middleware/validationMiddleware.js'; // Authentication middleware
+import { createEvent, getEvents } from '../controllers/eventController.js';
+import { validateEventInput } from '../middleware/validationMiddleware.js'; 
 
 const router = express.Router();
 
-// Set up multer to handle image uploads
-const multer = require('multer');
-const upload = multer();  // Set up multer for handling the file upload
+const upload = multer(); 
 
-app.post('/add-event', upload.single('eventImage'), createEvent); 
-
+// Separate the .get() and .post() methods
+router.get('/', getEvents);
+router.post('/add-event', upload.single('eventImage'), validateEventInput, createEvent); // Add a path for .post()
 
 export default router;

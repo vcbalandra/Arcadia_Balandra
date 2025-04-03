@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/AuthContext';
 
 import {
@@ -23,8 +22,7 @@ import {
   AllEvents,
 } from './pages';
 
-import { action as addEventAction } from './pages/AddEvent';
-import { action as allEventsLoader } from './pages/AllEvents';
+import { loader as allEventsLoader } from './pages/AllEvents';
 import { loader as eventsLoader } from './pages/Events';
 import { loader as knowledgeLoader } from './pages/Knowledge';
 import { loader as innovationsLoader } from './pages/Innovations';
@@ -33,6 +31,7 @@ import { action as profileAction } from './pages/Profile';
 import { loader as adminLoader } from './pages/Admin';
 import { action as registerAction } from './pages/Register';
 import { action as loginAction } from './pages/Login';
+import PrivateRoute from './components/PrivateRoute';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -65,23 +64,21 @@ const App = () => {
         },
         {
           path: 'dashboard',
-          element: <PrivateRoute element={DashboardLayout}  requiredRole="user" />, 
+          element: <DashboardLayout />,
           loader: dashboardLoader,
           children: [
             {
               index: true,
-              element: <AddEvent />,  
-              action: addEventAction(queryClient), 
+              element: <AddEvent />,
             },
             {
               path: 'add-event',
               element: <AddEvent />,
-              action: addEventAction(queryClient),
             },
             {
               path: 'all-events',
-              element: <AllEvents />,  
-              action: allEventsLoader(queryClient), 
+              element: <AllEvents />,
+              loader: allEventsLoader(queryClient),
               errorElement: <Error />,
             },
             {
@@ -91,7 +88,9 @@ const App = () => {
             },
             {
               path: 'admin',
-              element: <PrivateRoute element={Admin} requiredRole="user" />,  
+              element: (
+                <PrivateRoute element={<Admin />} requiredRole="user" />
+              ),
               loader: adminLoader,
             },
           ],

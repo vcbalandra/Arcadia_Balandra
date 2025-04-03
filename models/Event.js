@@ -19,6 +19,10 @@ const EventSchema = new mongoose.Schema(
       type: Date, 
       required: [true, 'Please provide an event Date'],
     },
+    registrationLink: {
+      type: String, 
+      required: [true, 'Please provide an registration link'],
+    },
     createdBy: {
       type: mongoose.Types.ObjectId,
       ref: 'User',
