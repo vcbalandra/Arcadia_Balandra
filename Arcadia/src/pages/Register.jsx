@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, redirect, Link } from 'react-router-dom';
 import Logo from '../components/Logo';
 import FormRow from '../components/FormRow';
@@ -26,6 +26,12 @@ export const action = async ({ request }) => {
 };
 
 const Register = () => {
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const [password, setPassword] = useState(''); // Controlled password input state
+
+  const handlePasswordToggle = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <Wrapper>
@@ -37,7 +43,21 @@ const Register = () => {
         <FormRow type="text" name="lastName" labelText="Last Name" />
         <FormRow type="text" name="location" labelText="Location" />
         <FormRow type="email" name="email" labelText="Email" />
-        <FormRow type="password" name="password" labelText="Password" />
+        <FormRow  type={showPassword ? 'text' : 'password'} 
+            labelText="Password"
+            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)} 
+            required />
+              <div className="show-password">
+            <input
+              type="checkbox"
+              id="show-password"
+              checked={showPassword}
+              onChange={handlePasswordToggle}
+            />
+            <label htmlFor="show-password">Show Password</label>
+          </div>
         <SubmitBtn />
         <p>
           Already a Admin?

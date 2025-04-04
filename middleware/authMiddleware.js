@@ -2,21 +2,21 @@ import {
   UnauthenticatedError,
   UnauthorizedError,
 } from '../errors/customErrors.js';
-import { verifyJWT } from '../utils/tokenUtils.js';
+import jwt from 'jsonwebtoken';
 
 export const authenticateUser = (req, res, next) => {
-  const token = req.cookies.token; 
-  
+  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+
   if (!token) {
-    throw new UnauthenticatedError('Authentication invalid: No token provided');
+    return res.status(401).json({ message: 'Not authenticated' });
   }
 
   try {
-    const { userId, role } = verifyJWT(token);  
-    req.user = { userId, role }; 
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // Assuming the decoded token contains user data (like `user.id`)
     next();
   } catch (error) {
-    throw new UnauthenticatedError('Authentication invalid: Invalid token');
+    return res.status(401).json({ message: 'Invalid token' });
   }
 };
 

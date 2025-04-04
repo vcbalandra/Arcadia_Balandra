@@ -1,12 +1,13 @@
 import express from 'express';
-import { login, register, logout } from '../controllers/authController.js';
+import { register, logout } from '../controllers/authController.js';
 import {
   validateRegisterInput,
   validateLoginInput,
 } from '../middleware/validationMiddleware.js';
 import rateLimiter from 'express-rate-limit';
-import jwt from 'jsonwebtoken'; // Import jwt for token generation
+import { createJWT } from '../utils/tokenUtils.js';
 import User from '../models/User.js';
+import { StatusCodes } from 'http-status-codes';
 
 const router = express.Router();
 
@@ -29,31 +30,24 @@ router.post('/login', apiLimiter, validateLoginInput, async (req, res) => {
   try {
     const user = await User.findOne({ email });
 
-    if (!user || !(await user.comparePassword(password))) {
-      return res.status(401).json({ msg: 'Invalid credentials' });
+    if (!user) {
+      return res.status(401).json({ msg: 'Email is invalid.' });
     }
 
-    const token = jwt.sign(
-      { userId: user._id, role: user.role }, 
-      process.env.JWT_SECRET, 
-      { expiresIn: '1d' } 
-    );
+    if (!(await user.comparePassword(password))) {
+      return res.status(401).json({ msg: 'Password is incorrect.' });
+    }
+
+    const token = createJWT({ userId: user._id, role: user.role });
+    const oneDay = 1000 * 60 * 60 * 24;
 
     res.cookie('token', token, {
-      httpOnly: true, 
+      httpOnly: true,
+      expires: new Date(Date.now() + oneDay),
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Strict', 
-      maxAge: 24 * 60 * 60 * 1000, 
     });
-
-    res.status(200).json({
-      msg: 'Login successful',
-      user: {
-        id: user._id,
-        email: user.email,
-        role: user.role,
-      },
-    });
+    res.status(StatusCodes.OK).json({ msg: 'user logged in' });
+    
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Server error' });

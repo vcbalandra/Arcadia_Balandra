@@ -23,13 +23,24 @@ const EventSchema = new mongoose.Schema(
       type: String, 
       required: [true, 'Please provide an registration link'],
     },
-    createdBy: {
-      type: mongoose.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
+    // createdBy: {
+    //   type: mongoose.Types.ObjectId,
+    //   ref: 'User',
+    //   required: true,
+    // },
   },
   { timestamps: true }
 );
+
+EventSchema.methods.toJSON = function () {
+  const event = this;
+  const eventObject = event.toObject();
+
+  delete eventObject.__v;  
+  delete eventObject.createdBy; 
+
+
+  return eventObject;
+};
 
 export default mongoose.model('Event', EventSchema);

@@ -92,7 +92,38 @@ const Wrapper = styled.section`
     color: #333;
     margin-bottom: 0.5rem;
   }
+
+   .show-password {
+    margin-top: 1rem; 
+    margin-right: 15rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: flex-start; 
+  }
   
+    @media (max-width: 480px) {
+    .form {
+      padding: 1.5rem; 
+      margin-top: 5rem; 
+    }
+
+    .show-password {
+      gap: 1rem;
+      justify-content: flex-start; 
+    }
+  }
+
+  @media (max-width: 768px) {
+    .form {
+      padding: 2rem; /* Consistent padding for medium screens */
+    }
+
+    .show-password {
+      gap: 1rem;
+      justify-content: flex-start;
+    }
+  }
 `;
 
 export default Wrapper;

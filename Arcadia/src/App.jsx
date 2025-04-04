@@ -31,7 +31,7 @@ import { action as profileAction } from './pages/Profile';
 import { loader as adminLoader } from './pages/Admin';
 import { action as registerAction } from './pages/Register';
 import { action as loginAction } from './pages/Login';
-import PrivateRoute from './components/PrivateRoute';
+// import PrivateRoute from './components/PrivateRoute';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,7 +50,7 @@ const App = () => {
       children: [
         {
           index: true,
-          element: <Landing />,  
+          element: <Landing />,
         },
         {
           path: 'register',
@@ -60,12 +60,12 @@ const App = () => {
         {
           path: 'login',
           element: <Login />,
-          action: loginAction(queryClient),
+          action: loginAction,
         },
         {
           path: 'dashboard',
-          element: <DashboardLayout />,
-          loader: dashboardLoader,
+          element: <DashboardLayout queryClient={queryClient} />,
+          loader: dashboardLoader(queryClient),
           children: [
             {
               index: true,
@@ -78,19 +78,17 @@ const App = () => {
             {
               path: 'all-events',
               element: <AllEvents />,
-              loader: allEventsLoader(queryClient),
+              loader: allEventsLoader,
               errorElement: <Error />,
             },
             {
               path: 'profile',
               element: <Profile />,
-              action: profileAction(queryClient),
+              action: profileAction,
             },
             {
               path: 'admin',
-              element: (
-                <PrivateRoute element={<Admin />} requiredRole="user" />
-              ),
+              element: <Admin />,
               loader: adminLoader,
             },
           ],
@@ -115,12 +113,10 @@ const App = () => {
   ]);
 
   return (
-    <AuthProvider>  
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 };
 

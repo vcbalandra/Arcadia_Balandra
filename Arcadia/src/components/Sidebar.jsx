@@ -13,10 +13,10 @@ const Sidebar = () => {
           <Link to="/dashboard/add-event" className="sidebar-link">Add Event</Link>
         </li>
         <li>
-          <Link to="/dashboard/event-list" className="sidebar-link">Event List</Link>
+          <Link to="/dashboard/all-events" className="sidebar-link">Event List</Link>
         </li>
         <li>
-          <Link to="/dashboard/admin" className="sidebar-link">Admin</Link>
+          <Link to="/admin" className="sidebar-link">Admin</Link>
         </li>
       </ul>
     </div>

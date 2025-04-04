@@ -5,7 +5,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  width: 90vw;
+  width: 100vw;
   justify-content: center;
   text-align: center;
 
@@ -48,6 +48,7 @@ const Wrapper = styled.div`
   
   .dashboard-content {
     flex-grow: 1;
+    width: 100%;
   }
   
   .tabs {

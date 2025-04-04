@@ -1,14 +1,26 @@
 import express from 'express';
 import multer from 'multer';
 import { createEvent, getEvents } from '../controllers/eventController.js';
-import { validateEventInput } from '../middleware/validationMiddleware.js'; 
+import { authenticateUser } from '../middleware/authMiddleware.js';
+
 
 const router = express.Router();
+const storage = multer.memoryStorage();
+const upload = multer({
+    storage,
+    limits: { fileSize: 10 * 1024 * 1024 },  
+    fileFilter: (req, file, cb) => {
+      if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+      } else {
+        cb(new Error('Invalid file type'), false);
+      }
+    }
+  });
 
-const upload = multer(); 
-
-// Separate the .get() and .post() methods
-router.get('/', getEvents);
-router.post('/add-event', upload.single('eventImage'), validateEventInput, createEvent); // Add a path for .post()
+// Routes
+router.get('/', authenticateUser, getEvents); 
+router.post('/add-event', upload.single('eventImage'), createEvent);
+router.get('/all-events',authenticateUser, getEvents);
 
 export default router;

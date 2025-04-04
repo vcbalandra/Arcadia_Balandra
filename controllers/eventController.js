@@ -1,114 +1,57 @@
-import cloudinary from 'cloudinary';
-import Event from '../models/Event.js'; // Event model
-import multer from 'multer'; // Make sure multer is installed for file handling
+import Event from '../models/Event.js'; // Import the Event model
+import path from 'path';
 
-// Set up Cloudinary configuration
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// Multer memory storage for handling image upload in memory (no need to save it to disk)
-const storage = multer.memoryStorage();
-const upload = multer({ dest: 'uploads/' }).single('eventImage'); // Assuming you're uploading 'eventImage' field
-
-// Cloudinary image upload helper function (simplified)
-const uploadEventImage = async (file) => {
-  try {
-    if (!file) {
-      throw new Error('No image file uploaded');
-    }
-
-    // Cloudinary upload directly from buffer
-    const cloudinaryResponse = await cloudinary.uploader.upload_stream(
-      { resource_type: 'auto' },
-      (error, result) => {
-        if (error) {
-          throw new Error('Cloudinary upload failed: ' + error.message);
-        }
-        return result;
-      }
-    );
-
-    // Pipe the file buffer to Cloudinary
-    cloudinaryResponse.end(file.buffer); // 'file.buffer' holds the image data
-
-    return { imageUrl: cloudinaryResponse.secure_url };
-
-  } catch (error) {
-    console.error('Cloudinary Upload Error:', error);
-    return { error: 'Image upload failed' };
-  }
-};
-
-// Event creation handler
 export const createEvent = async (req, res) => {
   try {
-    console.log(req.body);
-    
-    const { eventTitle, eventDescription, eventDate, registrationLink } = req.body;
-    const createdBy = req.user.id;
+    // Ensure that the uploaded file is logged and available
+    console.log('Uploaded file:', req.file);
 
-    // Validate input fields
+    const { eventTitle, eventDescription, eventDate, registrationLink } = req.body;
+    const eventImage = req.file ? req.file.path : null; 
+    
     if (!eventTitle || !eventDescription || !eventDate || !registrationLink) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({ message: 'All fields are required' });
     }
 
-    // Handle image upload (using multer middleware for handling file upload)
-    upload(req, res, async (err) => {
-      if (err) {
-        return res.status(400).json({ message: "Error uploading image" });
-      }
+    if (!req.file) {
+      return res.status(400).json({ message: 'Event image is required' });
+    }
 
-      if (!req.file) {
-        return res.status(400).json({ message: "Image is required" });
-      }
+    // Get the file path from the uploaded file
+    const eventImagePath = req.file.path; // This should be correct now
 
-      // Upload the image to Cloudinary
-      const cloudinaryResponse = await uploadEventImage(req.file);
+    // Validate `createdBy` (which comes from the user authentication)
+    // if (!req.user || !req.user.id) {
+    //   return res.status(400).json({ message: 'User not authenticated' });
+    // }
 
-      if (cloudinaryResponse.error) {
-        return res.status(500).json({ error: cloudinaryResponse.error });
-      }
-
-      const imageUrl = cloudinaryResponse.imageUrl;
-
-      // Create new event
-      const event = new Event({
-        eventTitle,
-        eventDescription,
-        eventDate,
-        eventImage: imageUrl, // Store Cloudinary URL
-        registrationLink,
-        createdBy,
-      });
-
-      await event.save();
-
-      res.status(201).json(event);
-
+    // Create the event object
+    const event = new Event({
+      eventTitle,
+      eventDescription,
+      eventDate,
+      registrationLink,
+      eventImage, // Save the file path
+      // createdBy: req.user.id,      // Store the user ID of the creator
     });
 
+    // Save the event to the database
+    await event.save();
+
+    return res.status(201).json({ message: 'Event created successfully', event });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.error('Error in createEvent controller:', error);
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
-// Fetch events handler
+// Get all events
 export const getEvents = async (req, res) => {
   try {
-    const events = await Event.find()
-      .sort({ createdAt: -1 }) // Sort by creation date in descending order
-      .populate('createdBy', 'name email'); // Assuming createdBy references a User model
-
-    return res.status(200).json({
-      msg: 'Events fetched successfully',
-      events,
-    });
+    const events = await Event.find().sort({ createdAt: -1 }).populate('createdBy', 'name email');
+    return res.status(200).json({ message: 'Events fetched successfully', events });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ msg: 'Error fetching events' });
+    return res.status(500).json({ message: 'Error fetching events' });
   }
 };

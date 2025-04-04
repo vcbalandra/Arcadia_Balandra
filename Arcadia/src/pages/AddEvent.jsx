@@ -1,127 +1,152 @@
 import React, { useState } from "react";
+import { Modal, Button, Form } from "react-bootstrap"; 
 import { toast } from "react-toastify";
-import Wrapper from "../assets/wrappers/Dashboard";
-import { useNavigate } from "react-router-dom";
-import customFetch from '../utils/customFetch';
- 
-const CreateEventForm = () => {
-    const [eventTitle, setTitle] = useState("");
-    const [registrationLink, setRegistration] = useState("");
-    const [eventDescription, setDescription] = useState("");
-    const [eventDate, setDate] = useState("");
-    const [eventImage, setImage] = useState(null);
-    const navigate = useNavigate();
- 
-    const handleFileChange = (e) => {
-        setImage(e.target.files[0]);
-    };
- 
-    const handleCreateEvent = async (event) => {
-        event.preventDefault();
-    
-        const formData = new FormData();
-        formData.append("eventTitle", eventTitle);
-        formData.append("registrationLink", registrationLink);
-        formData.append("eventDescription", eventDescription);
-        formData.append("eventDate", eventDate);
-        if (eventImage) {
-            formData.append("eventImage", eventImage);
-        }
-    
-        // Log FormData to inspect the contents
-        for (let pair of formData.entries()) {
-            console.log(pair[0] + ": " + pair[1]);
-        }
-    
-        try {
-            const response = await customFetch.post("/event/add-event", formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-    
-            const data = await response.json();
-    
-            if (response.ok) {
-                toast.success("Event created successfully!");
-                navigate('/admin/events');
-                // Reset form fields
-                setTitle("");
-                setRegistration("");
-                setDescription("");
-                setDate("");
-                setImage(null);
-            } else {
-                toast.error(data.message || "Failed to create event!");
+import 'react-toastify/dist/ReactToastify.css';
+import customFetch from "../utils/customFetch"; 
+
+
+const AddEvent = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [eventTitle, setEventTitle] = useState("");
+  const [registrationLink, setRegistrationLink] = useState("");
+  const [eventDescription, setEventDescription] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [eventImage, setEventImage] = useState(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setEventImage(file);
+    }
+  };
+
+  const handleCreateEvent = async (e) => {
+    e.preventDefault(); 
+
+    const formData = new FormData();
+    formData.append("eventTitle", eventTitle);
+    formData.append("registrationLink", registrationLink);
+    formData.append("eventDescription", eventDescription);
+    formData.append("eventDate", eventDate);
+    if (eventImage) {
+        console.log("Uploading event image:", eventImage); // Check the event image
+        formData.append("eventImage", eventImage);
+    } else {
+        console.error("No event image selected.");
+    }
+
+    for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+    }
+
+    try {
+        const token = localStorage.getItem('token');  // Or however you store your token (e.g., in cookies)
+        const response = await customFetch.post("/event/add-event", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,  // Send the token in the header
             }
-        } catch (error) {
-            console.error("Error creating event:", error);
-            toast.error("Server error while creating event!");
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            toast.success("Event created successfully!");
+            setEventTitle("");
+            setRegistrationLink("");
+            setEventDescription("");
+            setEventDate("");
+            setEventImage(null);
+        } else {
+            toast.error(data.message || "Failed to create event!");
         }
-    };
- 
-    return (
-        <Wrapper>
-            <div className="container">
-                <h2>Create New Event</h2>
-                <form onSubmit={handleCreateEvent} className="form" encType="multipart/form-data">
-                    <div className="mb-3">
-                        <label className="form-label">Title</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            value={eventTitle}
-                            onChange={(e) => setTitle(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label className="form-label">Registration Link</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            value={registrationLink}
-                            onChange={(e) => setRegistration(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label className="form-label">Description</label>
-                        <textarea
-                            className="form-control"
-                            rows="3"
-                            value={eventDescription}
-                            onChange={(e) => setDescription(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label className="form-label">Date</label>
-                        <input
-                            type="date"
-                            className="form-control"
-                            value={eventDate}
-                            onChange={(e) => setDate(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label className="form-label">Event Image</label>
-                        <input
-                            type="file"
-                            className="form-control"
-                            onChange={handleFileChange}
-                            accept="image/*"
-                        />
-                    </div>
-                    <button type="submit" className="btn btn-success">
-                        Create Event
-                    </button>
-                </form>
-            </div>
- 
-        </Wrapper>
-    );
+    } catch (error) {
+        console.error("Error creating event:", error);
+        toast.error("Failed to create event!");
+    }
 };
- 
-export default CreateEventForm;
+
+  return (
+    <div className="container">
+      <Button variant="primary" onClick={() => setShowModal(true)}>
+        Add Event
+      </Button>
+
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Create New Event</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          <Form onSubmit={handleCreateEvent} encType="multipart/form-data">
+            <Form.Group className="mb-3">
+              <Form.Label>Event Title</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter event title"
+                value={eventTitle}
+                onChange={(e) => setEventTitle(e.target.value)}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Registration Link</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter registration link"
+                value={registrationLink}
+                onChange={(e) => setRegistrationLink(e.target.value)}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                placeholder="Enter event description"
+                value={eventDescription}
+                onChange={(e) => setEventDescription(e.target.value)}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Event Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={eventDate}
+                onChange={(e) => setEventDate(e.target.value)}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Event Image</Form.Label>
+              <Form.Control
+                type="file"
+                onChange={handleFileChange}
+                accept="image/*"
+                required
+              />
+               <div className="mt-2">
+               <strong>Selected Image:</strong>
+                <p>{eventImage && (
+                <div className="mt-2">
+                <p>{eventImage.name}</p> 
+                </div>
+                )}</p>
+                </div>
+            </Form.Group>
+            <Button variant="success" type="submit" className="w-100">
+              Create Event
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+    </div>
+  );
+};
+
+export default AddEvent;

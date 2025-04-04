@@ -1,24 +1,24 @@
 import { Router } from 'express';
 import {
   getCurrentUser,
-  updateUser,
+  // updateUser,
 } from '../controllers/userController.js';
 import { validateUpdateUserInput } from '../middleware/validationMiddleware.js';
 import {
-  authorizePermissions, authenticateUser
+  authorizePermissions 
 } from '../middleware/authMiddleware.js';
 import upload from '../middleware/multerMiddleware.js';
 const router = Router();
 
-router.get('/current-user', authenticateUser, getCurrentUser);
-router.get('/admin/profile', [
+router.get('/current-user', getCurrentUser);
+router.get('/profile', [
   authorizePermissions('user'),
 ]);
-router.patch(
-  '/update-user',
-  upload.single('avatar'),
-  validateUpdateUserInput,
-  updateUser
-);
+// router.patch(
+//   '/update-user',
+//   upload.single('avatar'),
+//   validateUpdateUserInput,
+//   updateUser
+// );
 
 export default router;
