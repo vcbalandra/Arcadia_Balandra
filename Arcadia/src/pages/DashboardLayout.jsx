@@ -2,9 +2,11 @@ import React, { useState, useEffect, useContext, createContext } from 'react';
 import { Outlet, useLocation, Link, redirect, useNavigate, useNavigation } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Loading from '../components/Loading';
+import AdminNavbar from '../components/AdminNavbar';
 import Wrapper from '../assets/wrappers/Dashboard';
 import { useQuery } from '@tanstack/react-query';
 import customFetch from '../utils/customFetch';
+import { toast } from 'react-toastify';
 
 const userQuery = {
   queryKey: ['user'],
@@ -34,10 +36,10 @@ const DashboardLayout = ({ queryClient }) => {
   const [activeTab, setActiveTab] = useState('addEvent');
 
   const logoutUser = async () => {
-    navigate('/');
+    navigate('/login');
     await customFetch.get('/auth/logout');
     queryClient.invalidateQueries();
-    toast.success('Logging out...');
+    toast.success('Logged out');
   };
 
   customFetch.interceptors.response.use(
@@ -75,6 +77,7 @@ const DashboardLayout = ({ queryClient }) => {
     }}
   >
     <Wrapper>
+      <AdminNavbar />
       <div className="dashboard-container">
         <Sidebar />
         <div className="dashboard-content">
